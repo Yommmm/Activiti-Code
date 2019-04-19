@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:tx="http://www.springframework.org/schema/tx" xmlns:jpa="http://www.springframework.org/schema/data/jpa"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.1.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.1.xsd
+		http://www.springframework.org/schema/data/jpa http://www.springframework.org/schema/data/jpa/spring-jpa-1.0.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <!-- 数据源配置, 使用DBCP数据库连接池 -->
+    <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+        <property name="driverClassName" value="${activiti.datasource.driver-class-name}"/>
+        <property name="url" value="${activiti.datasource.url}"/>
+        <property name="username" value="${activiti.datasource.username}"/>
+        <property name="password" value="${activiti.datasource.password}"/>
+        <!-- Connection Pooling Info -->
+        <property name="initialSize" value="${activiti.datasource.initialSize}"/>
+        <property name="minIdle" value="${activiti.datasource.minIdle}"/>
+        <property name="maxActive" value="${activiti.datasource.maxActive}"/>
+        <property name="maxIdle" value="${activiti.datasource.minIdle}"/>
+        <property name="defaultAutoCommit" value="${activiti.datasource.defaultautocommit}"/>
+        <!-- 连接Idle一个小时后超时 -->
+        <property name="timeBetweenEvictionRunsMillis" value="${activiti.datasource.timeBetweenEvictionRunsMillis}"/>
+        <property name="minEvictableIdleTimeMillis" value="${activiti.datasource.minEvictableIdleTimeMillis}"/>
+    </bean>
+
+    <!-- Jpa Entity Manager 配置 -->
+    <bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
+        <property name="dataSource" ref="dataSource"/>
+        <property name="jpaVendorAdapter" ref="hibernateJpaVendorAdapter"/>
+        <property name="packagesToScan" value="com.zlst.business.activiti"/>
+        <property name="jpaProperties">
+            <props>
+                <prop key="hibernate.dialect">${jpaentitymanager.hibernate.dialect}</prop>
+                <prop key="hibernate.ejb.naming_strategy">${jpaentitymanager.hibernate.ejb.naming_strategy}</prop>
+                <prop key="hibernate.hbm2ddl.auto">${jpaentitymanager.hibernate.hbm2ddl.auto}</prop>
+            </props>
+        </property>
+    </bean>
+
+    <bean id="hibernateJpaVendorAdapter" class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter"/>
+
+    <!-- Spring Data Jpa配置 -->
+    <jpa:repositories base-package="com.zlst.business.activiti" transaction-manager-ref="transactionManager"
+                      entity-manager-factory-ref="entityManagerFactory"/>
+
+    <!-- Jpa 事务配置 -->
+    <bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager">
+        <property name="entityManagerFactory" ref="entityManagerFactory"/>
+    </bean>
+
+    <!-- 使用annotation定义事务 -->
+    <tx:annotation-driven transaction-manager="transactionManager" proxy-target-class="true"/>
+</beans>

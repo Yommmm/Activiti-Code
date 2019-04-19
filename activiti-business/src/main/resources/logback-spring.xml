@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--日志配置文件由平台提供-->
+<configuration>
+    <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
+    <!--获取应用名称，优先从bootstrap.yml，如没有，则从application.yml中获取-->
+    <springProperty scope="context" name="appName" source="spring.application.name"/>
+    <!--获取日志级别，从application.yml中获取,没有配置，默认取error-->
+    <springProperty scope="context" name="logLevel" source="logging.level" defaultValue="error"/>
+    <!--获取运行时IP-->
+    <conversionRule conversionWord="ip" converterClass="com.zlst.iputils.IpConvert" />
+    <!--纳秒flag-->
+    <conversionRule conversionWord="nanos" converterClass="com.zlst.nanos.NanoTime" />
+    <!--毫秒-->
+    <conversionRule conversionWord="millis" converterClass="com.zlst.millis.CurrentTimeMillis" />
+    <!--设置日志文件保存目录-->
+    <property name="LOG_HOME" value="/opt/applogs"/>
+    <!--设置日志格式-->
+    <property name="CONSOLE_LOG_PATTERN"
+              value="[%d{yyyy-MM-dd HH:mm:ss.SSS}] [%nanos] [${hostname}] [%level] [%ip] [${appName:-}] [%X{X-B3-TraceId:-},%X{X-B3-SpanId:-},%X{X-B3-ParentSpanId:-},%X{X-Span-Export:-}] [${PID:- }] [%15.15t] [%class:%M:%line] %m%n${LOG_EXCEPTION_CONVERSION_WORD:-%wEx}"/>
+    <!-- 控制台打印日志的相关配置 -->
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <!--<filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>debug</level>
+        </filter>-->
+        <encoder>
+            <pattern>${CONSOLE_LOG_PATTERN}</pattern>
+            <charset>utf8</charset>
+        </encoder>
+    </appender>
+    <!--输出日志到文件-->
+    <appender name="fileout" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>${LOG_HOME}/${HOSTNAME}-%d{yyyy-MM-dd}-%i.log</fileNamePattern>
+            <maxFileSize>100MB</maxFileSize>
+            <maxHistory>1</maxHistory>
+            <totalSizeCap>500MB</totalSizeCap>
+        </rollingPolicy>
+        <encoder>
+            <pattern>${CONSOLE_LOG_PATTERN}</pattern>
+            <charset>utf8</charset>
+        </encoder>
+    </appender>
+    <!--异步将日志写入文件-->
+    <appender name="ASYNC" class="ch.qos.logback.classic.AsyncAppender">
+        <appender-ref ref="fileout" />
+    </appender>
+    <!--设置日志级别-->
+    <root level="${logLevel}">
+        <appender-ref ref="STDOUT" />
+        <appender-ref ref="ASYNC" />
+    </root>
+    <!--以上配置请勿修改，如确有需求请联系170063(liuxifeng@chalco-steering.com)-->
+
+    <!--定制调整包级别示例-->
+    <logger name="org.springframework.boot.context.embedded.tomcat" level="info"/>
+</configuration>

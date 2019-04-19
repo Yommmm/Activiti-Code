@@ -1,0 +1,21 @@
+spring:
+  cloud:
+    config:
+      name: order-manager   #配置中心配置文件的前缀 即gateway-framework-dev.yml的前部分。
+        #结合name指定加载文件为gateway-framework-dev.yml。
+#      uri: http://192.168.10.241:7000/   #uri的方式配置
+      discovery:
+        enabled: true  #开启Config服务发现支持
+        service-id: microservice-config-server  #此处需要设置成Config Server在Eureka上注册的服务名（serviceId的方式）
+      profile: dev
+  #application name
+  application:
+    name: microservice-order-manager
+# Eureka相关
+eureka:
+  client:
+    serviceUrl:
+      #defaultZone: http://order.peer1.com/eureka/,http://order.peer2.com/eureka/
+      defaultZone: http://eureka:8761/eureka/
+  instance:
+    prefer-ip-address: true

@@ -1,0 +1,52 @@
+#port
+server:
+  port: 8081
+spring:
+  datasource:
+    type: com.alibaba.druid.pool.DruidDataSource
+    driver-class-name: com.mysql.jdbc.Driver
+#JPA Configuration :
+  jpa:
+    database: mysql
+    show-sql: true
+    generate-ddl: false
+#search config
+    properties:
+      hibernate:
+        search:
+          default:
+            directory_provider: filesystem
+            indexBase:  c:/lucene/indexes/
+#application name
+  application:
+    name: microservice-order-manager
+  sleuth:
+    sampler:
+      percentage: 1
+  zipkin:
+    base-url: http://zipkin-server.kube-system
+#errorcode msg
+  messages:
+     basename: i18n/exception_info,i18n/base_exception_info
+management:
+  security:
+    enabled: false
+hystrix:
+  command:
+    default:
+      execution:
+        isolation:
+          thread:
+            timeoutInMilliseconds: 6000
+logging:
+  config:
+    classpath: logback-spring.xml
+
+#ELK日志
+zlst:
+  elklog:
+    pointcutCtrl: execution(public * com.zlst.module.order.ctrl..*.*(..))
+
+
+
+

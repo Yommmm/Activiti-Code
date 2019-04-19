@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:activiti="http://activiti.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://www.activiti.org/test">
+  <process id="WMS-NoRawMaterialOutProcess" name="WMS原料非氧化铝出库流程图" isExecutable="true">
+    <startEvent id="startevent1" name="开始"></startEvent>
+    <endEvent id="endevent1" name="结束"></endEvent>
+    <userTask id="instruct" name="指令下发"></userTask>
+    <sequenceFlow id="flow1" sourceRef="startevent1" targetRef="instruct">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${startStatus=="1"}]]></conditionExpression>
+    </sequenceFlow>
+    <userTask id="outOperate" name="货物拣配"></userTask>
+    <sequenceFlow id="flow2" sourceRef="instruct" targetRef="outOperate"></sequenceFlow>
+    <userTask id="outConfirm" name="出库确认"></userTask>
+    <sequenceFlow id="flow3" sourceRef="outOperate" targetRef="outConfirm"></sequenceFlow>
+    <sequenceFlow id="flow4" sourceRef="outConfirm" targetRef="endevent1"></sequenceFlow>
+    <sequenceFlow id="flow5" name="直接指令下发" sourceRef="startevent1" targetRef="outOperate">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${startStatus=="2"}]]></conditionExpression>
+    </sequenceFlow>
+  </process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_WMS-NoRawMaterialOutProcess">
+    <bpmndi:BPMNPlane bpmnElement="WMS-NoRawMaterialOutProcess" id="BPMNPlane_WMS-NoRawMaterialOutProcess">
+      <bpmndi:BPMNShape bpmnElement="startevent1" id="BPMNShape_startevent1">
+        <omgdc:Bounds height="35.0" width="35.0" x="306.0" y="270.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="endevent1" id="BPMNShape_endevent1">
+        <omgdc:Bounds height="35.0" width="35.0" x="846.0" y="270.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="instruct" id="BPMNShape_instruct">
+        <omgdc:Bounds height="55.0" width="105.0" x="386.0" y="260.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="outOperate" id="BPMNShape_outOperate">
+        <omgdc:Bounds height="55.0" width="105.0" x="540.0" y="260.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="outConfirm" id="BPMNShape_outConfirm">
+        <omgdc:Bounds height="55.0" width="105.0" x="696.0" y="260.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge bpmnElement="flow1" id="BPMNEdge_flow1">
+        <omgdi:waypoint x="341.0" y="287.0"></omgdi:waypoint>
+        <omgdi:waypoint x="386.0" y="287.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow2" id="BPMNEdge_flow2">
+        <omgdi:waypoint x="491.0" y="287.0"></omgdi:waypoint>
+        <omgdi:waypoint x="540.0" y="287.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow3" id="BPMNEdge_flow3">
+        <omgdi:waypoint x="645.0" y="287.0"></omgdi:waypoint>
+        <omgdi:waypoint x="696.0" y="287.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow4" id="BPMNEdge_flow4">
+        <omgdi:waypoint x="801.0" y="287.0"></omgdi:waypoint>
+        <omgdi:waypoint x="846.0" y="287.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow5" id="BPMNEdge_flow5">
+        <omgdi:waypoint x="323.0" y="270.0"></omgdi:waypoint>
+        <omgdi:waypoint x="323.0" y="223.0"></omgdi:waypoint>
+        <omgdi:waypoint x="434.0" y="223.0"></omgdi:waypoint>
+        <omgdi:waypoint x="592.0" y="223.0"></omgdi:waypoint>
+        <omgdi:waypoint x="592.0" y="260.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="14.0" width="100.0" x="340.0" y="201.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>

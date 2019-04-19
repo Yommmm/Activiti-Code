@@ -1,0 +1,444 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:activiti="http://activiti.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://www.activiti.org/test">
+  <process id="WorkOutAluNotMet" name="销售出厂铝锭不需要计量" isExecutable="true">
+    <startEvent id="startevent1" name="Start"></startEvent>
+    <endEvent id="endevent1" name="End"></endEvent>
+    <receiveTask id="waitVehicleIn" name="等待车辆入厂">
+      <extensionElements>
+        <activiti:executionListener event="end" class="com.zlst.proxy.TaskListenerProxy">
+          <activiti:field name="methodType">
+            <activiti:string><![CDATA[POST]]></activiti:string>
+          </activiti:field>
+          <activiti:field name="apiUrl">
+            <activiti:string><![CDATA[/logistics/lmsFlowNodeInst/doCurNodeFlowInst]]></activiti:string>
+          </activiti:field>
+          <activiti:field name="params">
+            <activiti:string><![CDATA[{"curNodeId":"OutAlu_VehicleEntry","nextNodeId":"OutAlu_Loading","nodeParams":"{'relaName':'门禁点','userName':'门岗'}"}]]></activiti:string>
+          </activiti:field>
+        </activiti:executionListener>
+      </extensionElements>
+    </receiveTask>
+    <receiveTask id="waitVehicleOut" name="等待出厂">
+      <extensionElements>
+        <activiti:executionListener event="end" class="com.zlst.proxy.TaskListenerProxy">
+          <activiti:field name="methodType">
+            <activiti:string><![CDATA[POST]]></activiti:string>
+          </activiti:field>
+          <activiti:field name="apiUrl">
+            <activiti:string><![CDATA[/logistics/lmsFlowNodeInst/completeNodeFlowInst]]></activiti:string>
+          </activiti:field>
+          <activiti:field name="params">
+            <activiti:string><![CDATA[{"curNodeId":"OutAlu_VehicleOut","nodeParams":"{'dcName':'门禁点','userName':'门岗'}"}]]></activiti:string>
+          </activiti:field>
+        </activiti:executionListener>
+      </extensionElements>
+    </receiveTask>
+    <serviceTask id="noticeGoodsNotice" name="通知总任务" activiti:async="true" activiti:class="com.zlst.proxy.ServiceTaskProxy">
+      <extensionElements>
+        <activiti:field name="methodType">
+          <activiti:string><![CDATA[POST]]></activiti:string>
+        </activiti:field>
+        <activiti:field name="apiUrl">
+          <activiti:string><![CDATA[/logistics/goodsNotice/notifyGoodsNotice]]></activiti:string>
+        </activiti:field>
+      </extensionElements>
+    </serviceTask>
+    <serviceTask id="createVehicle" name="生成子任务" activiti:async="true" activiti:class="com.zlst.proxy.ServiceTaskProxy">
+      <extensionElements>
+        <activiti:field name="methodType">
+          <activiti:string><![CDATA[POST]]></activiti:string>
+        </activiti:field>
+        <activiti:field name="apiUrl">
+          <activiti:string><![CDATA[/logistics/vehicleInOut/unloading]]></activiti:string>
+        </activiti:field>
+      </extensionElements>
+    </serviceTask>
+    <sequenceFlow id="flow32" sourceRef="noticeGoodsNotice" targetRef="endevent1"></sequenceFlow>
+    <serviceTask id="createLoading" name="生成装货任务" activiti:async="true" activiti:class="com.zlst.proxy.ServiceTaskProxy">
+      <extensionElements>
+        <activiti:field name="methodType">
+          <activiti:string><![CDATA[POST]]></activiti:string>
+        </activiti:field>
+        <activiti:field name="apiUrl">
+          <activiti:string><![CDATA[/logistics/lmsLoadInfo/loading]]></activiti:string>
+        </activiti:field>
+      </extensionElements>
+    </serviceTask>
+    <serviceTask id="noticeLoading" name="通知装货" activiti:async="true" activiti:class="com.zlst.proxy.ServiceTaskProxy">
+      <extensionElements>
+        <activiti:field name="apiUrl">
+          <activiti:string><![CDATA[/logistics/lmsLoadInfo/noticeloading]]></activiti:string>
+        </activiti:field>
+        <activiti:field name="methodType">
+          <activiti:string><![CDATA[POST]]></activiti:string>
+        </activiti:field>
+      </extensionElements>
+    </serviceTask>
+    <receiveTask id="waitLoadEnd" name="等待装货完成确认">
+      <extensionElements>
+        <activiti:executionListener event="end" class="com.zlst.proxy.TaskListenerProxy">
+          <activiti:field name="methodType">
+            <activiti:string><![CDATA[POST]]></activiti:string>
+          </activiti:field>
+          <activiti:field name="apiUrl">
+            <activiti:string><![CDATA[/logistics/lmsFlowNodeInst/doCurNodeFlowInst]]></activiti:string>
+          </activiti:field>
+          <activiti:field name="params">
+            <activiti:string><![CDATA[{"curNodeId":"OutAlu_Loading","nextNodeId":"OutAlu_VehicleOut","nodeParams":"{'warehouseName':'装货仓库','userName':'库管员'}"}]]></activiti:string>
+          </activiti:field>
+        </activiti:executionListener>
+      </extensionElements>
+    </receiveTask>
+    <serviceTask id="delVehicleStatus" name="更新车辆状态信息" activiti:async="true" activiti:class="com.zlst.proxy.ServiceTaskProxy">
+      <extensionElements>
+        <activiti:field name="methodType">
+          <activiti:string><![CDATA[POST]]></activiti:string>
+        </activiti:field>
+        <activiti:field name="apiUrl">
+          <activiti:string><![CDATA[/logistics/vehicleStatus/completeTask]]></activiti:string>
+        </activiti:field>
+      </extensionElements>
+    </serviceTask>
+    <sequenceFlow id="flow48" sourceRef="waitVehicleOut" targetRef="delVehicleStatus"></sequenceFlow>
+    <serviceTask id="updatFlowStatus" name="修改子任务状态为已完成" activiti:async="true" activiti:class="com.zlst.proxy.ServiceTaskProxy">
+      <extensionElements>
+        <activiti:field name="apiUrl">
+          <activiti:string><![CDATA[/logistics/goodsNoticeDetail/subFlowCompleted]]></activiti:string>
+        </activiti:field>
+        <activiti:field name="methodType">
+          <activiti:string><![CDATA[POST]]></activiti:string>
+        </activiti:field>
+      </extensionElements>
+    </serviceTask>
+    <sequenceFlow id="flow49" sourceRef="delVehicleStatus" targetRef="updatFlowStatus"></sequenceFlow>
+    <sequenceFlow id="flow50" sourceRef="updatFlowStatus" targetRef="noticeGoodsNotice"></sequenceFlow>
+    <serviceTask id="updateDetApprStatus" name="生成出厂许可申请" activiti:async="true" activiti:class="com.zlst.proxy.ServiceTaskProxy">
+      <extensionElements>
+        <activiti:field name="methodType">
+          <activiti:string><![CDATA[POST]]></activiti:string>
+        </activiti:field>
+        <activiti:field name="apiUrl">
+          <activiti:string><![CDATA[/logistics/goodsNoticeDetail/genInoutApprove]]></activiti:string>
+        </activiti:field>
+      </extensionElements>
+    </serviceTask>
+    <exclusiveGateway id="exclusivegateway2" name="Exclusive Gateway"></exclusiveGateway>
+    <sequenceFlow id="flow59" name="审批通过" sourceRef="exclusivegateway2" targetRef="waitVehicleOut">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${isDetailAppr=="1"}]]></conditionExpression>
+    </sequenceFlow>
+    <exclusiveGateway id="exclusivegateway3" name="Exclusive Gateway"></exclusiveGateway>
+    <exclusiveGateway id="exclusivegateway4" name="Exclusive Gateway"></exclusiveGateway>
+    <serviceTask id="sendMsg" name="审批不通过，发送消息到司机APP" activiti:async="true" activiti:class="com.zlst.proxy.ServiceTaskProxy">
+      <extensionElements>
+        <activiti:field name="methodType">
+          <activiti:string><![CDATA[POST]]></activiti:string>
+        </activiti:field>
+        <activiti:field name="apiUrl">
+          <activiti:string><![CDATA[/logistics/vehicleQueueInstance/sendRefuseMessage]]></activiti:string>
+        </activiti:field>
+      </extensionElements>
+    </serviceTask>
+    <sequenceFlow id="flow64" sourceRef="reservationApproval" targetRef="exclusivegateway4"></sequenceFlow>
+    <sequenceFlow id="flow65" name="审批不通过" sourceRef="exclusivegateway4" targetRef="sendMsg">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${vehicleCheckResult=="noPass"}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="flow66" sourceRef="sendMsg" targetRef="endevent1"></sequenceFlow>
+    <userTask id="reservationApproval" name="车辆预约审批">
+      <extensionElements>
+        <activiti:executionListener event="start" class="com.zlst.proxy.TaskListenerProxy">
+          <activiti:field name="methodType">
+            <activiti:string><![CDATA[POST]]></activiti:string>
+          </activiti:field>
+          <activiti:field name="apiUrl">
+            <activiti:string><![CDATA[/logistics/lmsFlowNodeInst/createNextFlowInst]]></activiti:string>
+          </activiti:field>
+          <activiti:field name="params">
+            <activiti:string><![CDATA[{"curNodeId":"OutAlu_ReservCheck"}]]></activiti:string>
+          </activiti:field>
+        </activiti:executionListener>
+      </extensionElements>
+    </userTask>
+    <serviceTask id="vehiclepath" name="推送入厂引导图" activiti:async="true" activiti:class="com.zlst.proxy.ServiceTaskProxy">
+      <extensionElements>
+        <activiti:field name="methodType">
+          <activiti:string><![CDATA[POST]]></activiti:string>
+        </activiti:field>
+        <activiti:field name="apiUrl">
+          <activiti:string><![CDATA[/logistics/planningRouteCfg/RouteCfgPush]]></activiti:string>
+        </activiti:field>
+        <activiti:executionListener event="start" class="com.zlst.proxy.TaskListenerProxy">
+          <activiti:field name="methodType">
+            <activiti:string><![CDATA[POST]]></activiti:string>
+          </activiti:field>
+          <activiti:field name="apiUrl">
+            <activiti:string><![CDATA[/logistics/lmsFlowNodeInst/doCurNodeFlowInst]]></activiti:string>
+          </activiti:field>
+          <activiti:field name="params">
+            <activiti:string><![CDATA[{"curNodeId":"OutAlu_ReservCheck","nextNodeId":"OutAlu_VehicleEntry","nodeParams":"{'orgName':'操作部门','userName':'操作员工','checkResult':'审批意见'}"}]]></activiti:string>
+          </activiti:field>
+        </activiti:executionListener>
+      </extensionElements>
+    </serviceTask>
+    <sequenceFlow id="flow73" name="审批通过" sourceRef="exclusivegateway4" targetRef="vehiclepath">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${vehicleCheckResult=="pass"}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="flow74" name="不需要审批" sourceRef="exclusivegateway3" targetRef="vehiclepath">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${vehicleIsCheck=="0"}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="flow75" sourceRef="vehiclepath" targetRef="createVehicle"></sequenceFlow>
+    <serviceTask id="loadQueueInstance" name="推送仓库点到司机APP" activiti:async="true" activiti:class="com.zlst.proxy.ServiceTaskProxy">
+      <extensionElements>
+        <activiti:field name="methodType">
+          <activiti:string><![CDATA[POST]]></activiti:string>
+        </activiti:field>
+        <activiti:field name="apiUrl">
+          <activiti:string><![CDATA[/logistics/goodsNoticeDetail/pushMessageGorDriver]]></activiti:string>
+        </activiti:field>
+      </extensionElements>
+    </serviceTask>
+    <sequenceFlow id="flow89" sourceRef="createLoading" targetRef="loadQueueInstance"></sequenceFlow>
+    <sequenceFlow id="flow90" sourceRef="loadQueueInstance" targetRef="noticeLoading"></sequenceFlow>
+    <serviceTask id="vehicleQueueInstance" name="推送门禁点到司机APP" activiti:async="true" activiti:class="com.zlst.proxy.ServiceTaskProxy">
+      <extensionElements>
+        <activiti:field name="methodType">
+          <activiti:string><![CDATA[POST]]></activiti:string>
+        </activiti:field>
+        <activiti:field name="apiUrl">
+          <activiti:string><![CDATA[/logistics/goodsNoticeDetail/pushMessageGorDriver]]></activiti:string>
+        </activiti:field>
+      </extensionElements>
+    </serviceTask>
+    <sequenceFlow id="flow91" sourceRef="createVehicle" targetRef="vehicleQueueInstance"></sequenceFlow>
+    <sequenceFlow id="flow97" sourceRef="startevent1" targetRef="exclusivegateway3"></sequenceFlow>
+    <sequenceFlow id="flow98" name="需要审批" sourceRef="exclusivegateway3" targetRef="reservationApproval">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${vehicleIsCheck=="1"}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="flow99" sourceRef="vehicleQueueInstance" targetRef="waitVehicleIn"></sequenceFlow>
+    <sequenceFlow id="flow100" sourceRef="waitLoadEnd" targetRef="updateDetApprStatus"></sequenceFlow>
+    <sequenceFlow id="flow101" sourceRef="updateDetApprStatus" targetRef="DetailAppr"></sequenceFlow>
+    <sequenceFlow id="flow102" sourceRef="waitVehicleIn" targetRef="createLoading"></sequenceFlow>
+    <sequenceFlow id="flow103" sourceRef="DetailAppr" targetRef="exclusivegateway2"></sequenceFlow>
+    <sequenceFlow id="flow104" name="审批不通过" sourceRef="exclusivegateway2" targetRef="DetailAppr">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${isDetailAppr=="0"}]]></conditionExpression>
+    </sequenceFlow>
+    <userTask id="DetailAppr" name="出厂许可审批"></userTask>
+    <sequenceFlow id="flow105" sourceRef="noticeLoading" targetRef="waitLoadEnd"></sequenceFlow>
+    <dataObject id="vehicleNo" name="vehicleNo" itemSubjectRef="xsd:string"></dataObject>
+    <dataObject id="planDetailId" name="planDetailId" itemSubjectRef="xsd:string"></dataObject>
+    <dataObject id="goodsNoticeId" name="goodsNoticeId" itemSubjectRef="xsd:string"></dataObject>
+    <dataObject id="business_eureka_name" name="business_eureka_name" itemSubjectRef="xsd:string">
+      <extensionElements>
+        <activiti:value>microservice-zlst-lms-logistics</activiti:value>
+      </extensionElements>
+    </dataObject>
+    <dataObject id="waitName" name="waitName" itemSubjectRef="xsd:string">
+      <extensionElements>
+        <activiti:value>waitVehicleIn</activiti:value>
+      </extensionElements>
+    </dataObject>
+    <dataObject id="vehicleIsCheck" name="vehicleIsCheck" itemSubjectRef="xsd:string">
+      <extensionElements>
+        <activiti:value>1</activiti:value>
+      </extensionElements>
+    </dataObject>
+    <dataObject id="vehicleStatus" name="vehicleStatus" itemSubjectRef="xsd:string">
+      <extensionElements>
+        <activiti:value>0</activiti:value>
+      </extensionElements>
+    </dataObject>
+    <dataObject id="procPerson" name="procPerson" itemSubjectRef="xsd:string">
+      <extensionElements>
+        <activiti:value></activiti:value>
+      </extensionElements>
+    </dataObject>
+    <dataObject id="procPersonName" name="procPersonName" itemSubjectRef="xsd:string">
+      <extensionElements>
+        <activiti:value></activiti:value>
+      </extensionElements>
+    </dataObject>
+    <dataObject id="zone" name="zone" itemSubjectRef="xsd:string">
+      <extensionElements>
+        <activiti:value></activiti:value>
+      </extensionElements>
+    </dataObject>
+  </process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_WorkOutAluNotMet">
+    <bpmndi:BPMNPlane bpmnElement="WorkOutAluNotMet" id="BPMNPlane_WorkOutAluNotMet">
+      <bpmndi:BPMNShape bpmnElement="startevent1" id="BPMNShape_startevent1">
+        <omgdc:Bounds height="35.0" width="35.0" x="345.0" y="106.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="endevent1" id="BPMNShape_endevent1">
+        <omgdc:Bounds height="35.0" width="35.0" x="470.0" y="666.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="waitVehicleIn" id="BPMNShape_waitVehicleIn">
+        <omgdc:Bounds height="55.0" width="105.0" x="310.0" y="570.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="waitVehicleOut" id="BPMNShape_waitVehicleOut">
+        <omgdc:Bounds height="55.0" width="105.0" x="651.0" y="371.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="noticeGoodsNotice" id="BPMNShape_noticeGoodsNotice">
+        <omgdc:Bounds height="55.0" width="105.0" x="651.0" y="656.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="createVehicle" id="BPMNShape_createVehicle">
+        <omgdc:Bounds height="55.0" width="105.0" x="310.0" y="378.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="createLoading" id="BPMNShape_createLoading">
+        <omgdc:Bounds height="55.0" width="105.0" x="470.0" y="570.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="noticeLoading" id="BPMNShape_noticeLoading">
+        <omgdc:Bounds height="55.0" width="105.0" x="470.0" y="378.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="waitLoadEnd" id="BPMNShape_waitLoadEnd">
+        <omgdc:Bounds height="55.0" width="105.0" x="470.0" y="286.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="delVehicleStatus" id="BPMNShape_delVehicleStatus">
+        <omgdc:Bounds height="55.0" width="105.0" x="651.0" y="460.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="updatFlowStatus" id="BPMNShape_updatFlowStatus">
+        <omgdc:Bounds height="55.0" width="141.0" x="633.0" y="570.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="updateDetApprStatus" id="BPMNShape_updateDetApprStatus">
+        <omgdc:Bounds height="55.0" width="105.0" x="470.0" y="186.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="exclusivegateway2" id="BPMNShape_exclusivegateway2">
+        <omgdc:Bounds height="40.0" width="40.0" x="683.0" y="285.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="exclusivegateway3" id="BPMNShape_exclusivegateway3">
+        <omgdc:Bounds height="40.0" width="40.0" x="342.0" y="193.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="exclusivegateway4" id="BPMNShape_exclusivegateway4">
+        <omgdc:Bounds height="40.0" width="40.0" x="197.0" y="293.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sendMsg" id="BPMNShape_sendMsg">
+        <omgdc:Bounds height="62.0" width="105.0" x="165.0" y="410.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="reservationApproval" id="BPMNShape_reservationApproval">
+        <omgdc:Bounds height="55.0" width="105.0" x="165.0" y="186.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="vehiclepath" id="BPMNShape_vehiclepath">
+        <omgdc:Bounds height="55.0" width="105.0" x="310.0" y="286.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="loadQueueInstance" id="BPMNShape_loadQueueInstance">
+        <omgdc:Bounds height="55.0" width="127.0" x="459.0" y="476.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="vehicleQueueInstance" id="BPMNShape_vehicleQueueInstance">
+        <omgdc:Bounds height="65.0" width="105.0" x="310.0" y="471.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="DetailAppr" id="BPMNShape_DetailAppr">
+        <omgdc:Bounds height="55.0" width="105.0" x="651.0" y="186.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge bpmnElement="flow32" id="BPMNEdge_flow32">
+        <omgdi:waypoint x="651.0" y="683.0"></omgdi:waypoint>
+        <omgdi:waypoint x="505.0" y="683.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow48" id="BPMNEdge_flow48">
+        <omgdi:waypoint x="703.0" y="426.0"></omgdi:waypoint>
+        <omgdi:waypoint x="703.0" y="460.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow49" id="BPMNEdge_flow49">
+        <omgdi:waypoint x="703.0" y="515.0"></omgdi:waypoint>
+        <omgdi:waypoint x="703.0" y="570.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow50" id="BPMNEdge_flow50">
+        <omgdi:waypoint x="703.0" y="625.0"></omgdi:waypoint>
+        <omgdi:waypoint x="703.0" y="656.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow59" id="BPMNEdge_flow59">
+        <omgdi:waypoint x="703.0" y="325.0"></omgdi:waypoint>
+        <omgdi:waypoint x="703.0" y="371.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="14.0" width="48.0" x="702.0" y="339.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow64" id="BPMNEdge_flow64">
+        <omgdi:waypoint x="217.0" y="241.0"></omgdi:waypoint>
+        <omgdi:waypoint x="217.0" y="293.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow65" id="BPMNEdge_flow65">
+        <omgdi:waypoint x="217.0" y="333.0"></omgdi:waypoint>
+        <omgdi:waypoint x="217.0" y="410.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="14.0" width="60.0" x="216.0" y="364.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow66" id="BPMNEdge_flow66">
+        <omgdi:waypoint x="217.0" y="472.0"></omgdi:waypoint>
+        <omgdi:waypoint x="217.0" y="683.0"></omgdi:waypoint>
+        <omgdi:waypoint x="470.0" y="683.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow73" id="BPMNEdge_flow73">
+        <omgdi:waypoint x="237.0" y="313.0"></omgdi:waypoint>
+        <omgdi:waypoint x="310.0" y="313.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="14.0" width="48.0" x="236.0" y="300.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow74" id="BPMNEdge_flow74">
+        <omgdi:waypoint x="362.0" y="233.0"></omgdi:waypoint>
+        <omgdi:waypoint x="362.0" y="286.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="14.0" width="60.0" x="362.0" y="255.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow75" id="BPMNEdge_flow75">
+        <omgdi:waypoint x="362.0" y="341.0"></omgdi:waypoint>
+        <omgdi:waypoint x="362.0" y="378.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow89" id="BPMNEdge_flow89">
+        <omgdi:waypoint x="522.0" y="570.0"></omgdi:waypoint>
+        <omgdi:waypoint x="522.0" y="531.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow90" id="BPMNEdge_flow90">
+        <omgdi:waypoint x="522.0" y="476.0"></omgdi:waypoint>
+        <omgdi:waypoint x="522.0" y="433.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow91" id="BPMNEdge_flow91">
+        <omgdi:waypoint x="362.0" y="433.0"></omgdi:waypoint>
+        <omgdi:waypoint x="362.0" y="471.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow97" id="BPMNEdge_flow97">
+        <omgdi:waypoint x="362.0" y="141.0"></omgdi:waypoint>
+        <omgdi:waypoint x="362.0" y="193.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow98" id="BPMNEdge_flow98">
+        <omgdi:waypoint x="342.0" y="213.0"></omgdi:waypoint>
+        <omgdi:waypoint x="270.0" y="213.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="14.0" width="48.0" x="285.0" y="200.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow99" id="BPMNEdge_flow99">
+        <omgdi:waypoint x="362.0" y="536.0"></omgdi:waypoint>
+        <omgdi:waypoint x="362.0" y="570.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow100" id="BPMNEdge_flow100">
+        <omgdi:waypoint x="522.0" y="286.0"></omgdi:waypoint>
+        <omgdi:waypoint x="522.0" y="241.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow101" id="BPMNEdge_flow101">
+        <omgdi:waypoint x="575.0" y="213.0"></omgdi:waypoint>
+        <omgdi:waypoint x="651.0" y="213.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow102" id="BPMNEdge_flow102">
+        <omgdi:waypoint x="415.0" y="597.0"></omgdi:waypoint>
+        <omgdi:waypoint x="470.0" y="597.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow103" id="BPMNEdge_flow103">
+        <omgdi:waypoint x="703.0" y="241.0"></omgdi:waypoint>
+        <omgdi:waypoint x="703.0" y="285.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow104" id="BPMNEdge_flow104">
+        <omgdi:waypoint x="723.0" y="305.0"></omgdi:waypoint>
+        <omgdi:waypoint x="823.0" y="304.0"></omgdi:waypoint>
+        <omgdi:waypoint x="703.0" y="241.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="14.0" width="60.0" x="729.0" y="291.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow105" id="BPMNEdge_flow105">
+        <omgdi:waypoint x="522.0" y="378.0"></omgdi:waypoint>
+        <omgdi:waypoint x="522.0" y="341.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>

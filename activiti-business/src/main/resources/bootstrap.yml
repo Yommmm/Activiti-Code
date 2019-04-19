@@ -1,0 +1,20 @@
+spring:
+  cloud:
+    config:
+      name: activiti-business-logistics  #配置中心配置文件的前缀 即gateway-framework-dev.yml的前部分。
+      discovery:
+        enabled: true  #开启Config服务发现支持
+        service-id: microservice-config-server  #此处需要设置成Config Server在Eureka上注册的服务名（serviceId的方式）
+      profile: dev
+#application name
+  application:
+    name: microservice-activiti-business
+# Eureka相关
+eureka:
+  client:
+    serviceUrl:
+      #defaultZone: http://peer1:8761/eureka/,http://peer2:8761/eureka/
+      defaultZone: http://eureka:8761/eureka/
+      #defaultZone: http://order.peer1.com/eureka/,http://order.peer2.com/eureka/
+  instance:
+    prefer-ip-address: true

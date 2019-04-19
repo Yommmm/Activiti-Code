@@ -1,0 +1,48 @@
+#port
+server:
+  port: 8083
+
+spring:
+  profiles:
+# profile value dev|test|prod
+    active: dev
+
+#application name
+  application:
+    name: microservice-activiti-business
+  sleuth:
+    sampler:
+      percentage: 1
+  zipkin:
+    base-url: http://zipkin-server.kube-system
+#errorcode msg
+  messages:
+     basename: i18n/exception_info,i18n/base_exception_info
+management:
+  security:
+    enabled: false
+logging:
+  config:
+    classpath: logback-spring.xml
+hystrix:
+  command:
+    default:
+      execution:
+        isolation:
+          thread:
+            timeoutInMilliseconds: 6000
+#eureka config 1
+eureka:
+  instance:
+    prefer-ip-address: true
+  client:
+    service-url:
+      #defaultZone: http://peer1:8761/eureka,http://peer2:8761/eureka
+      #defaultZone: http://order.peer1.com/eureka/,http://order.peer2.com/eureka/
+      defaultZone: http://eureka:8761/eureka/
+activiti:
+  deployPath: classpath*:/processes/logistics/*
+#ELK日志
+#zlst:
+#  elklog:
+#    pointcutCtrl: execution(public * com.zlst..*.*(..))

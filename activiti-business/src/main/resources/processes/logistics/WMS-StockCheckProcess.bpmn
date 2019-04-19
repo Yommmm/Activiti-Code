@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:activiti="http://activiti.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://www.activiti.org/test">
+  <process id="WMS-StockCheckProcess" name="盘点任务流程" isExecutable="true">
+    <startEvent id="startevent" name="开始"></startEvent>
+    <endEvent id="endevent" name="结束"></endEvent>
+    <userTask id="prepareData" name="准备数据"></userTask>
+    <userTask id="startStkChk" name="开始盘点"></userTask>
+    <sequenceFlow id="flow2" sourceRef="prepareData" targetRef="startStkChk"></sequenceFlow>
+    <userTask id="finishStkChk" name="盘点完成"></userTask>
+    <sequenceFlow id="flow11" sourceRef="finishStkChk" targetRef="endevent"></sequenceFlow>
+    <receiveTask id="stockChecking" name="正在盘点"></receiveTask>
+    <sequenceFlow id="flow14" sourceRef="startStkChk" targetRef="stockChecking"></sequenceFlow>
+    <sequenceFlow id="flow15" sourceRef="stockChecking" targetRef="finishStkChk"></sequenceFlow>
+    <sequenceFlow id="flow16" sourceRef="startevent" targetRef="prepareData"></sequenceFlow>
+  </process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_WMS-StockCheckProcess">
+    <bpmndi:BPMNPlane bpmnElement="WMS-StockCheckProcess" id="BPMNPlane_WMS-StockCheckProcess">
+      <bpmndi:BPMNShape bpmnElement="startevent" id="BPMNShape_startevent">
+        <omgdc:Bounds height="35.0" width="35.0" x="260.0" y="220.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="endevent" id="BPMNShape_endevent">
+        <omgdc:Bounds height="35.0" width="35.0" x="1002.0" y="220.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="prepareData" id="BPMNShape_prepareData">
+        <omgdc:Bounds height="55.0" width="105.0" x="360.0" y="210.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="startStkChk" id="BPMNShape_startStkChk">
+        <omgdc:Bounds height="55.0" width="105.0" x="522.0" y="210.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="finishStkChk" id="BPMNShape_finishStkChk">
+        <omgdc:Bounds height="55.0" width="105.0" x="842.0" y="210.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="stockChecking" id="BPMNShape_stockChecking">
+        <omgdc:Bounds height="55.0" width="105.0" x="682.0" y="210.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge bpmnElement="flow2" id="BPMNEdge_flow2">
+        <omgdi:waypoint x="465.0" y="237.0"></omgdi:waypoint>
+        <omgdi:waypoint x="522.0" y="237.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow11" id="BPMNEdge_flow11">
+        <omgdi:waypoint x="947.0" y="237.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1002.0" y="237.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow14" id="BPMNEdge_flow14">
+        <omgdi:waypoint x="627.0" y="237.0"></omgdi:waypoint>
+        <omgdi:waypoint x="682.0" y="237.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow15" id="BPMNEdge_flow15">
+        <omgdi:waypoint x="787.0" y="237.0"></omgdi:waypoint>
+        <omgdi:waypoint x="842.0" y="237.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow16" id="BPMNEdge_flow16">
+        <omgdi:waypoint x="295.0" y="237.0"></omgdi:waypoint>
+        <omgdi:waypoint x="360.0" y="237.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>

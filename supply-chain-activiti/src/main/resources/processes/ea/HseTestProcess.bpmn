@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:activiti="http://activiti.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://www.activiti.org/test">
+  <process id="HseTestProcess" name="HseTestProcess" isExecutable="true">
+    <startEvent id="startevent1" name="Start"></startEvent>
+    <userTask id="usertask1" name="领导审批" activiti:assignee="auditName">
+      <extensionElements>
+        <activiti:taskListener event="create" class="com.zlst.proxy.TaskListenerProxy">
+          <activiti:field name="serviceName">
+            <activiti:string><![CDATA[microservice-zlst-hse-ctrl]]></activiti:string>
+          </activiti:field>
+          <activiti:field name="apiUrl">
+            <activiti:string><![CDATA[/hse/task/sendMessageToAudit]]></activiti:string>
+          </activiti:field>
+          <activiti:field name="methodType">
+            <activiti:string><![CDATA[POST]]></activiti:string>
+          </activiti:field>
+        </activiti:taskListener>
+      </extensionElements>
+    </userTask>
+    <sequenceFlow id="flow1" sourceRef="startevent1" targetRef="usertask1"></sequenceFlow>
+    <exclusiveGateway id="exclusivegateway1" name="Exclusive Gateway"></exclusiveGateway>
+    <sequenceFlow id="flow2" sourceRef="usertask1" targetRef="exclusivegateway1"></sequenceFlow>
+    <userTask id="usertask2" name="财务核实发放" activiti:assignee="financialName">
+      <extensionElements>
+        <activiti:taskListener event="create" class="com.zlst.proxy.TaskListenerProxy">
+          <activiti:field name="serviceName">
+            <activiti:string><![CDATA[microservice-zlst-hse-ctrl]]></activiti:string>
+          </activiti:field>
+          <activiti:field name="apiUrl">
+            <activiti:string><![CDATA[/hse/task/sendMessageToFinancial]]></activiti:string>
+          </activiti:field>
+          <activiti:field name="methodType">
+            <activiti:string><![CDATA[POST]]></activiti:string>
+          </activiti:field>
+        </activiti:taskListener>
+      </extensionElements>
+    </userTask>
+    <sequenceFlow id="flow3" name="通过" sourceRef="exclusivegateway1" targetRef="usertask2">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${isAudit=='1'}]]></conditionExpression>
+    </sequenceFlow>
+    <userTask id="usertask3" name="申请人修改" activiti:assignee="applyName">
+      <extensionElements>
+        <activiti:taskListener event="create" class="com.zlst.proxy.TaskListenerProxy">
+          <activiti:field name="serviceName">
+            <activiti:string><![CDATA[microservice-zlst-hse-ctrl]]></activiti:string>
+          </activiti:field>
+          <activiti:field name="apiUrl">
+            <activiti:string><![CDATA[/hse/task/sendMessageToApply2]]></activiti:string>
+          </activiti:field>
+          <activiti:field name="methodType">
+            <activiti:string><![CDATA[POST]]></activiti:string>
+          </activiti:field>
+        </activiti:taskListener>
+      </extensionElements>
+    </userTask>
+    <sequenceFlow id="flow4" name="驳回" sourceRef="exclusivegateway1" targetRef="usertask3">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${isAudit=='3'}]]></conditionExpression>
+    </sequenceFlow>
+    <endEvent id="endevent1" name="End"></endEvent>
+    <sequenceFlow id="flow5" sourceRef="usertask2" targetRef="endevent1"></sequenceFlow>
+    <sequenceFlow id="flow6" name="不通过" sourceRef="exclusivegateway1" targetRef="endevent1">
+      <extensionElements>
+        <activiti:executionListener event="take" class="com.zlst.proxy.TaskListenerProxy">
+          <activiti:field name="serviceName">
+            <activiti:string><![CDATA[microservice-zlst-hse-ctrl]]></activiti:string>
+          </activiti:field>
+          <activiti:field name="apiUrl">
+            <activiti:string><![CDATA[/hse/task/sendMessageToApply]]></activiti:string>
+          </activiti:field>
+          <activiti:field name="methodType">
+            <activiti:string><![CDATA[POST]]></activiti:string>
+          </activiti:field>
+        </activiti:executionListener>
+      </extensionElements>
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${isAudit=='8'}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="flow7" sourceRef="usertask3" targetRef="usertask1"></sequenceFlow>
+    <dataObject id="auditName" name="auditName" itemSubjectRef="xsd:string">
+      <extensionElements>
+        <activiti:value>HSE001</activiti:value>
+      </extensionElements>
+    </dataObject>
+    <dataObject id="financialName" name="financialName" itemSubjectRef="xsd:string">
+      <extensionElements>
+        <activiti:value>HSE002</activiti:value>
+      </extensionElements>
+    </dataObject>
+    <dataObject id="applyName" name="applyName" itemSubjectRef="xsd:string">
+      <extensionElements>
+        <activiti:value>HSE003</activiti:value>
+      </extensionElements>
+    </dataObject>
+  </process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_HseTestProcess">
+    <bpmndi:BPMNPlane bpmnElement="HseTestProcess" id="BPMNPlane_HseTestProcess">
+      <bpmndi:BPMNShape bpmnElement="startevent1" id="BPMNShape_startevent1">
+        <omgdc:Bounds height="35.0" width="35.0" x="70.0" y="230.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="usertask1" id="BPMNShape_usertask1">
+        <omgdc:Bounds height="55.0" width="105.0" x="200.0" y="220.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="exclusivegateway1" id="BPMNShape_exclusivegateway1">
+        <omgdc:Bounds height="40.0" width="40.0" x="392.0" y="227.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="usertask2" id="BPMNShape_usertask2">
+        <omgdc:Bounds height="55.0" width="105.0" x="510.0" y="220.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="usertask3" id="BPMNShape_usertask3">
+        <omgdc:Bounds height="55.0" width="105.0" x="200.0" y="80.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="endevent1" id="BPMNShape_endevent1">
+        <omgdc:Bounds height="35.0" width="35.0" x="750.0" y="230.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge bpmnElement="flow1" id="BPMNEdge_flow1">
+        <omgdi:waypoint x="105.0" y="247.0"></omgdi:waypoint>
+        <omgdi:waypoint x="200.0" y="247.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow2" id="BPMNEdge_flow2">
+        <omgdi:waypoint x="305.0" y="247.0"></omgdi:waypoint>
+        <omgdi:waypoint x="392.0" y="247.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow3" id="BPMNEdge_flow3">
+        <omgdi:waypoint x="432.0" y="247.0"></omgdi:waypoint>
+        <omgdi:waypoint x="510.0" y="247.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="14.0" width="24.0" x="449.0" y="230.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow4" id="BPMNEdge_flow4">
+        <omgdi:waypoint x="412.0" y="227.0"></omgdi:waypoint>
+        <omgdi:waypoint x="411.0" y="107.0"></omgdi:waypoint>
+        <omgdi:waypoint x="305.0" y="107.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="14.0" width="24.0" x="413.0" y="181.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow5" id="BPMNEdge_flow5">
+        <omgdi:waypoint x="615.0" y="247.0"></omgdi:waypoint>
+        <omgdi:waypoint x="750.0" y="247.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow6" id="BPMNEdge_flow6">
+        <omgdi:waypoint x="412.0" y="267.0"></omgdi:waypoint>
+        <omgdi:waypoint x="412.0" y="366.0"></omgdi:waypoint>
+        <omgdi:waypoint x="767.0" y="366.0"></omgdi:waypoint>
+        <omgdi:waypoint x="767.0" y="265.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="14.0" width="100.0" x="412.0" y="289.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow7" id="BPMNEdge_flow7">
+        <omgdi:waypoint x="252.0" y="135.0"></omgdi:waypoint>
+        <omgdi:waypoint x="252.0" y="220.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>

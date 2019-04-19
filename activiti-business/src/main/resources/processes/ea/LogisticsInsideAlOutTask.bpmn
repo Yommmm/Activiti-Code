@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:activiti="http://activiti.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://www.activiti.org/test">
+  <process id="LogisticsInsideAlOutTask" name="内部车辆铝液出厂流程" isExecutable="true">
+    <startEvent id="startevent1" name="Start"></startEvent>
+    <serviceTask id="noticePickingLibrary" name="挑库" activiti:async="true" activiti:class="com.zlst.proxy.ServiceTaskProxy">
+      <extensionElements>
+        <activiti:field name="methodType">
+          <activiti:string><![CDATA[POST]]></activiti:string>
+        </activiti:field>
+        <activiti:field name="serviceName">
+          <activiti:string><![CDATA[microservice-zlst-eaif]]></activiti:string>
+        </activiti:field>
+        <activiti:field name="apiUrl">
+          <activiti:string><![CDATA[/logistics/lmsLoadInfo/noticePickingLibrary]]></activiti:string>
+        </activiti:field>
+      </extensionElements>
+    </serviceTask>
+    <userTask id="vehicleAllocate" name="车辆调度"></userTask>
+    <sequenceFlow id="flow1" sourceRef="startevent1" targetRef="vehicleAllocate"></sequenceFlow>
+    <sequenceFlow id="flow2" sourceRef="vehicleAllocate" targetRef="noticePickingLibrary"></sequenceFlow>
+    <serviceTask id="promoterFlow" name="启动子任务" activiti:async="true" activiti:class="com.zlst.proxy.ServiceTaskProxy">
+      <extensionElements>
+        <activiti:field name="methodType">
+          <activiti:string><![CDATA[POST]]></activiti:string>
+        </activiti:field>
+        <activiti:field name="apiUrl">
+          <activiti:string><![CDATA[/logistics/goodsNotice/splitGoodsNotice]]></activiti:string>
+        </activiti:field>
+        <activiti:field name="serviceName">
+          <activiti:string><![CDATA[microservice-zlst-eaif]]></activiti:string>
+        </activiti:field>
+      </extensionElements>
+    </serviceTask>
+    <sequenceFlow id="flow3" sourceRef="noticePickingLibrary" targetRef="promoterFlow"></sequenceFlow>
+    <receiveTask id="waitFlow" name="等待子任务完成"></receiveTask>
+    <sequenceFlow id="flow4" sourceRef="promoterFlow" targetRef="waitFlow"></sequenceFlow>
+    <endEvent id="endevent1" name="End"></endEvent>
+    <serviceTask id="updatePlanStatus" name="更新预报状态为已完成" activiti:async="true" activiti:class="com.zlst.proxy.ServiceTaskProxy">
+      <extensionElements>
+        <activiti:field name="methodType">
+          <activiti:string><![CDATA[POST]]></activiti:string>
+        </activiti:field>
+        <activiti:field name="apiUrl">
+          <activiti:string><![CDATA[/logistics/goodsNotice/notifyGoodsNoticeFinished]]></activiti:string>
+        </activiti:field>
+        <activiti:field name="serviceName">
+          <activiti:string><![CDATA[microservice-zlst-eaif]]></activiti:string>
+        </activiti:field>
+      </extensionElements>
+    </serviceTask>
+    <serviceTask id="noticeERP" name="通知ERP" activiti:async="true" activiti:class="com.zlst.proxy.ServiceTaskProxy">
+      <extensionElements>
+        <activiti:field name="methodType">
+          <activiti:string><![CDATA[POST]]></activiti:string>
+        </activiti:field>
+        <activiti:field name="apiUrl">
+          <activiti:string><![CDATA[/logistics/salesOrderDetail/noticeERP]]></activiti:string>
+        </activiti:field>
+        <activiti:field name="serviceName">
+          <activiti:string><![CDATA[microservice-zlst-eaif]]></activiti:string>
+        </activiti:field>
+      </extensionElements>
+    </serviceTask>
+    <sequenceFlow id="flow5" sourceRef="updatePlanStatus" targetRef="noticeERP"></sequenceFlow>
+    <sequenceFlow id="flow6" sourceRef="noticeERP" targetRef="endevent1"></sequenceFlow>
+    <serviceTask id="noticeWarehousingOut" name="出库" activiti:async="true" activiti:class="com.zlst.proxy.ServiceTaskProxy">
+      <extensionElements>
+        <activiti:field name="methodType">
+          <activiti:string><![CDATA[POST]]></activiti:string>
+        </activiti:field>
+        <activiti:field name="apiUrl">
+          <activiti:string><![CDATA[/logistics/lmsLoadInfo/noticeWarehousingOut]]></activiti:string>
+        </activiti:field>
+        <activiti:field name="serviceName">
+          <activiti:string><![CDATA[microservice-zlst-eaif]]></activiti:string>
+        </activiti:field>
+      </extensionElements>
+    </serviceTask>
+    <sequenceFlow id="flow8" sourceRef="noticeWarehousingOut" targetRef="updatePlanStatus"></sequenceFlow>
+    <sequenceFlow id="flow9" sourceRef="waitFlow" targetRef="noticeWarehousingOut"></sequenceFlow>
+    <dataObject id="goodsNoticeId" name="goodsNoticeId" itemSubjectRef="xsd:string"></dataObject>
+    <dataObject id="business_eureka_name" name="business_eureka_name" itemSubjectRef="xsd:string">
+      <extensionElements>
+        <activiti:value>microservice-zlst-lms-logistics</activiti:value>
+      </extensionElements>
+    </dataObject>
+  </process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_LogisticsInsideAlOutTask">
+    <bpmndi:BPMNPlane bpmnElement="LogisticsInsideAlOutTask" id="BPMNPlane_LogisticsInsideAlOutTask">
+      <bpmndi:BPMNShape bpmnElement="startevent1" id="BPMNShape_startevent1">
+        <omgdc:Bounds height="35.0" width="35.0" x="60.0" y="160.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="noticePickingLibrary" id="BPMNShape_noticePickingLibrary">
+        <omgdc:Bounds height="55.0" width="105.0" x="310.0" y="150.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="vehicleAllocate" id="BPMNShape_vehicleAllocate">
+        <omgdc:Bounds height="55.0" width="105.0" x="160.0" y="150.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="promoterFlow" id="BPMNShape_promoterFlow">
+        <omgdc:Bounds height="55.0" width="105.0" x="460.0" y="150.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="waitFlow" id="BPMNShape_waitFlow">
+        <omgdc:Bounds height="55.0" width="105.0" x="620.0" y="150.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="endevent1" id="BPMNShape_endevent1">
+        <omgdc:Bounds height="35.0" width="35.0" x="1290.0" y="160.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="updatePlanStatus" id="BPMNShape_updatePlanStatus">
+        <omgdc:Bounds height="55.0" width="111.0" x="940.0" y="150.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="noticeERP" id="BPMNShape_noticeERP">
+        <omgdc:Bounds height="55.0" width="105.0" x="1120.0" y="150.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="noticeWarehousingOut" id="BPMNShape_noticeWarehousingOut">
+        <omgdc:Bounds height="55.0" width="105.0" x="790.0" y="150.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge bpmnElement="flow1" id="BPMNEdge_flow1">
+        <omgdi:waypoint x="95.0" y="177.0"></omgdi:waypoint>
+        <omgdi:waypoint x="160.0" y="177.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow2" id="BPMNEdge_flow2">
+        <omgdi:waypoint x="265.0" y="177.0"></omgdi:waypoint>
+        <omgdi:waypoint x="310.0" y="177.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow3" id="BPMNEdge_flow3">
+        <omgdi:waypoint x="415.0" y="177.0"></omgdi:waypoint>
+        <omgdi:waypoint x="460.0" y="177.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow4" id="BPMNEdge_flow4">
+        <omgdi:waypoint x="565.0" y="177.0"></omgdi:waypoint>
+        <omgdi:waypoint x="620.0" y="177.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow5" id="BPMNEdge_flow5">
+        <omgdi:waypoint x="1051.0" y="177.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1120.0" y="177.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow6" id="BPMNEdge_flow6">
+        <omgdi:waypoint x="1225.0" y="177.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1290.0" y="177.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow8" id="BPMNEdge_flow8">
+        <omgdi:waypoint x="895.0" y="177.0"></omgdi:waypoint>
+        <omgdi:waypoint x="940.0" y="177.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow9" id="BPMNEdge_flow9">
+        <omgdi:waypoint x="725.0" y="177.0"></omgdi:waypoint>
+        <omgdi:waypoint x="790.0" y="177.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>

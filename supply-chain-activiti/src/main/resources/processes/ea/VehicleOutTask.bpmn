@@ -1,0 +1,527 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:activiti="http://activiti.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://www.activiti.org/test">
+  <process id="VehicleOutTask" name="车辆出厂" isExecutable="true">
+    <startEvent id="startevent1" name="Start"></startEvent>
+    <serviceTask id="reviseInVehicleType" name="判断车辆类型" activiti:async="true" activiti:class="com.zlst.proxy.ServiceTaskProxy">
+      <extensionElements>
+        <activiti:field name="methodType">
+          <activiti:string><![CDATA[POST]]></activiti:string>
+        </activiti:field>
+        <activiti:field name="apiUrl">
+          <activiti:string><![CDATA[/logistics/vehicleInOut/reviseVehicleType]]></activiti:string>
+        </activiti:field>
+      </extensionElements>
+    </serviceTask>
+    <exclusiveGateway id="exclusivegateway1" name="Exclusive Gateway"></exclusiveGateway>
+    <sequenceFlow id="flow2" sourceRef="reviseInVehicleType" targetRef="exclusivegateway1"></sequenceFlow>
+    <serviceTask id="reviseOutVehicleTask" name="是否有出厂任务" activiti:async="true" activiti:class="com.zlst.proxy.ServiceTaskProxy">
+      <extensionElements>
+        <activiti:field name="methodType">
+          <activiti:string><![CDATA[POST]]></activiti:string>
+        </activiti:field>
+        <activiti:field name="apiUrl">
+          <activiti:string><![CDATA[/logistics/vehicleInOut/reviseOutVehicleTask]]></activiti:string>
+        </activiti:field>
+      </extensionElements>
+    </serviceTask>
+    <sequenceFlow id="flow3" name="外部物流车辆、内部工艺车" sourceRef="exclusivegateway1" targetRef="reviseOutVehicleTask">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${vehicleType=="0" || vehicleType=="2"}]]></conditionExpression>
+    </sequenceFlow>
+    <exclusiveGateway id="exclusivegateway2" name="Exclusive Gateway"></exclusiveGateway>
+    <sequenceFlow id="flow5" sourceRef="reviseOutVehicleTask" targetRef="exclusivegateway2"></sequenceFlow>
+    <serviceTask id="updateVehDetStatus3" name="修改车辆状态" activiti:async="true" activiti:class="com.zlst.proxy.ServiceTaskProxy">
+      <extensionElements>
+        <activiti:field name="methodType">
+          <activiti:string><![CDATA[POST]]></activiti:string>
+        </activiti:field>
+        <activiti:field name="apiUrl">
+          <activiti:string><![CDATA[/logistics/vehicleInOut/updateVehicleDetailstatus]]></activiti:string>
+        </activiti:field>
+      </extensionElements>
+    </serviceTask>
+    <serviceTask id="updateVehDetStatus4" name="修改车辆状态" activiti:async="true" activiti:class="com.zlst.proxy.ServiceTaskProxy">
+      <extensionElements>
+        <activiti:field name="methodType">
+          <activiti:string><![CDATA[POST]]></activiti:string>
+        </activiti:field>
+        <activiti:field name="apiUrl">
+          <activiti:string><![CDATA[/logistics/vehicleInOut/updateVehicleDetailstatus]]></activiti:string>
+        </activiti:field>
+      </extensionElements>
+    </serviceTask>
+    <serviceTask id="noticeOut" name="通知出厂物流" activiti:async="true" activiti:class="com.zlst.proxy.ServiceTaskProxy">
+      <extensionElements>
+        <activiti:field name="methodType">
+          <activiti:string><![CDATA[POST]]></activiti:string>
+        </activiti:field>
+        <activiti:field name="apiUrl">
+          <activiti:string><![CDATA[/logistics/vehicleInOut/noticeOut]]></activiti:string>
+        </activiti:field>
+      </extensionElements>
+    </serviceTask>
+    <endEvent id="endevent2" name="End"></endEvent>
+    <serviceTask id="updateVehDetStatus" name="更新车辆状态" activiti:async="true" activiti:class="com.zlst.proxy.ServiceTaskProxy">
+      <extensionElements>
+        <activiti:field name="methodType">
+          <activiti:string><![CDATA[POST]]></activiti:string>
+        </activiti:field>
+        <activiti:field name="apiUrl">
+          <activiti:string><![CDATA[/logistics/vehicleInOut/updateVehicleDetailstatus]]></activiti:string>
+        </activiti:field>
+      </extensionElements>
+    </serviceTask>
+    <sequenceFlow id="flow23" name="无出厂任务" sourceRef="exclusivegateway2" targetRef="updateVehDetStatus">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${hasCarOutTask=="0"}]]></conditionExpression>
+    </sequenceFlow>
+    <serviceTask id="reviseVehicleOutRule" name="是否有出入厂许可证" activiti:async="true" activiti:class="com.zlst.proxy.ServiceTaskProxy">
+      <extensionElements>
+        <activiti:field name="methodType">
+          <activiti:string><![CDATA[POST]]></activiti:string>
+        </activiti:field>
+        <activiti:field name="apiUrl">
+          <activiti:string><![CDATA[/logistics/vehicleInOut/reviseVehicleOutRule]]></activiti:string>
+        </activiti:field>
+      </extensionElements>
+    </serviceTask>
+    <exclusiveGateway id="exclusivegateway5" name="Exclusive Gateway"></exclusiveGateway>
+    <serviceTask id="updateVehDetStatus2" name="更新车辆状态" activiti:async="true" activiti:class="com.zlst.proxy.ServiceTaskProxy">
+      <extensionElements>
+        <activiti:field name="methodType">
+          <activiti:string><![CDATA[POST]]></activiti:string>
+        </activiti:field>
+        <activiti:field name="apiUrl">
+          <activiti:string><![CDATA[/logistics/vehicleInOut/updateVehicleDetailstatus]]></activiti:string>
+        </activiti:field>
+      </extensionElements>
+    </serviceTask>
+    <sequenceFlow id="flow44" name="内部行政车、临时车辆、外部工艺车" sourceRef="exclusivegateway1" targetRef="reviseVehicleOutRule">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${vehicleType=="1" || vehicleType=="3" || vehicleType=="4"}]]></conditionExpression>
+    </sequenceFlow>
+    <exclusiveGateway id="exclusivegateway8" name="Exclusive Gateway"></exclusiveGateway>
+    <sequenceFlow id="flow47" sourceRef="outFormalities" targetRef="exclusivegateway8"></sequenceFlow>
+    <sequenceFlow id="flow48" name="安全检查通过" sourceRef="exclusivegateway8" targetRef="updateVehDetStatus3">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${isSafe=="1"}]]></conditionExpression>
+    </sequenceFlow>
+    <exclusiveGateway id="exclusivegateway9" name="Exclusive Gateway"></exclusiveGateway>
+    <sequenceFlow id="flow51" sourceRef="updateVehDetStatus4" targetRef="exclusivegateway9"></sequenceFlow>
+    <sequenceFlow id="flow52" name="外部物流车辆、内部工艺车、外部工艺车" sourceRef="exclusivegateway9" targetRef="noticeOut">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${vehicleType=="0" || vehicleType=="2" || vehicleType=="4"}]]></conditionExpression>
+    </sequenceFlow>
+    <userTask id="outFormalities" name="出厂手续处理"></userTask>
+    <serviceTask id="createVehDetail" name="生成出厂车辆详情" activiti:async="true" activiti:class="com.zlst.proxy.ServiceTaskProxy">
+      <extensionElements>
+        <activiti:field name="methodType">
+          <activiti:string><![CDATA[POST]]></activiti:string>
+        </activiti:field>
+        <activiti:field name="apiUrl">
+          <activiti:string><![CDATA[/logistics/vehicleInOut/createVehicleDetailOut]]></activiti:string>
+        </activiti:field>
+      </extensionElements>
+    </serviceTask>
+    <sequenceFlow id="flow54" sourceRef="startevent1" targetRef="createVehDetail"></sequenceFlow>
+    <sequenceFlow id="flow55" sourceRef="createVehDetail" targetRef="reviseInVehicleType"></sequenceFlow>
+    <serviceTask id="updateVehDetStatus5" name="更新车辆状态" activiti:async="true" activiti:class="com.zlst.proxy.ServiceTaskProxy">
+      <extensionElements>
+        <activiti:field name="methodType">
+          <activiti:string><![CDATA[POST]]></activiti:string>
+        </activiti:field>
+        <activiti:field name="apiUrl">
+          <activiti:string><![CDATA[/logistics/vehicleInOut/updateVehicleDetailstatus]]></activiti:string>
+        </activiti:field>
+      </extensionElements>
+    </serviceTask>
+    <sequenceFlow id="flow56" name="安全检查不通过" sourceRef="exclusivegateway8" targetRef="updateVehDetStatus5">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${isSafe=="0"}]]></conditionExpression>
+    </sequenceFlow>
+    <serviceTask id="noticeMsg1" name="发送通知" activiti:async="true" activiti:class="com.zlst.proxy.ServiceTaskProxy">
+      <extensionElements>
+        <activiti:field name="methodType">
+          <activiti:string><![CDATA[POST]]></activiti:string>
+        </activiti:field>
+        <activiti:field name="apiUrl">
+          <activiti:string><![CDATA[/logistics/vehicleInOut/noticeStatusUpdate]]></activiti:string>
+        </activiti:field>
+      </extensionElements>
+    </serviceTask>
+    <sequenceFlow id="flow57" sourceRef="updateVehDetStatus" targetRef="noticeMsg1"></sequenceFlow>
+    <sequenceFlow id="flow58" sourceRef="noticeOut" targetRef="noticeMsg1"></sequenceFlow>
+    <sequenceFlow id="flow59" sourceRef="updateVehDetStatus5" targetRef="noticeMsg1"></sequenceFlow>
+    <sequenceFlow id="flow60" name="内部行政车、临时车辆" sourceRef="exclusivegateway9" targetRef="noticeMsg1">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${vehicleType=="1" || vehicleType=="3"}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="flow61" sourceRef="updateVehDetStatus2" targetRef="noticeMsg1"></sequenceFlow>
+    <sequenceFlow id="flow62" sourceRef="noticeMsg1" targetRef="endevent2"></sequenceFlow>
+    <serviceTask id="createProvisionalVehicle" name="生成车辆出入厂任务" activiti:async="true" activiti:class="com.zlst.proxy.ServiceTaskProxy">
+      <extensionElements>
+        <activiti:field name="methodType">
+          <activiti:string><![CDATA[POST]]></activiti:string>
+        </activiti:field>
+        <activiti:field name="apiUrl">
+          <activiti:string><![CDATA[/logistics/vehicleInOut/createProvisionalVehicleOut]]></activiti:string>
+        </activiti:field>
+      </extensionElements>
+    </serviceTask>
+    <sequenceFlow id="flow63" name="有出入厂许可证" sourceRef="exclusivegateway5" targetRef="createProvisionalVehicle">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${isOutRule=="1"}]]></conditionExpression>
+    </sequenceFlow>
+    <serviceTask id="createProvisionalVehicle1" name="生成车辆出入厂任务" activiti:async="true" activiti:class="com.zlst.proxy.ServiceTaskProxy">
+      <extensionElements>
+        <activiti:field name="methodType">
+          <activiti:string><![CDATA[POST]]></activiti:string>
+        </activiti:field>
+        <activiti:field name="apiUrl">
+          <activiti:string><![CDATA[/logistics/vehicleInOut/createProvisionalVehicleOut]]></activiti:string>
+        </activiti:field>
+      </extensionElements>
+    </serviceTask>
+    <sequenceFlow id="flow65" name="无出入厂许可证" sourceRef="exclusivegateway5" targetRef="createProvisionalVehicle1">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${isOutRule=="0"}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="flow66" sourceRef="createProvisionalVehicle1" targetRef="updateVehDetStatus2"></sequenceFlow>
+    <serviceTask id="updateVehDetStatus1" name="更新车辆状态" activiti:class="com.zlst.proxy.ServiceTaskProxy">
+      <extensionElements>
+        <activiti:field name="methodType">
+          <activiti:string><![CDATA[POST]]></activiti:string>
+        </activiti:field>
+        <activiti:field name="apiUrl">
+          <activiti:string><![CDATA[/logistics/vehicleInOut/updateVehicleDetailstatus]]></activiti:string>
+        </activiti:field>
+      </extensionElements>
+    </serviceTask>
+    <serviceTask id="noticeMsg" name="发送通知" activiti:async="true" activiti:class="com.zlst.proxy.ServiceTaskProxy">
+      <extensionElements>
+        <activiti:field name="methodType">
+          <activiti:string><![CDATA[POST]]></activiti:string>
+        </activiti:field>
+        <activiti:field name="apiUrl">
+          <activiti:string><![CDATA[/logistics/vehicleInOut/noticeStatusUpdate]]></activiti:string>
+        </activiti:field>
+      </extensionElements>
+    </serviceTask>
+    <sequenceFlow id="flow67" name="有出厂任务" sourceRef="exclusivegateway2" targetRef="updateVehDetStatus1">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${hasCarOutTask=="1"}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="flow68" sourceRef="createProvisionalVehicle" targetRef="updateVehDetStatus1"></sequenceFlow>
+    <serviceTask id="noticeGateOutOpen" name="通知门禁开闸" activiti:async="true" activiti:class="com.zlst.proxy.ServiceTaskProxy">
+      <extensionElements>
+        <activiti:field name="methodType">
+          <activiti:string><![CDATA[POST]]></activiti:string>
+        </activiti:field>
+        <activiti:field name="apiUrl">
+          <activiti:string><![CDATA[/logistics/vehicleInOut/reviseFlag]]></activiti:string>
+        </activiti:field>
+      </extensionElements>
+    </serviceTask>
+    <serviceTask id="archivingVehicleOut" name="归档车辆出厂信息" activiti:async="true" activiti:class="com.zlst.proxy.ServiceTaskProxy">
+      <extensionElements>
+        <activiti:field name="methodType">
+          <activiti:string><![CDATA[POST]]></activiti:string>
+        </activiti:field>
+        <activiti:field name="apiUrl">
+          <activiti:string><![CDATA[/logistics/vehicleInOut/updateVehicleOut]]></activiti:string>
+        </activiti:field>
+      </extensionElements>
+    </serviceTask>
+    <sequenceFlow id="flow71" sourceRef="updateVehDetStatus3" targetRef="noticeGateOutOpen"></sequenceFlow>
+    <sequenceFlow id="flow72" sourceRef="noticeGateOutOpen" targetRef="archivingVehicleOut"></sequenceFlow>
+    <sequenceFlow id="flow73" sourceRef="archivingVehicleOut" targetRef="updateVehDetStatus4"></sequenceFlow>
+    <sequenceFlow id="flow74" sourceRef="updateVehDetStatus1" targetRef="noticeMsg"></sequenceFlow>
+    <sequenceFlow id="flow75" sourceRef="noticeMsg" targetRef="outFormalities"></sequenceFlow>
+    <exclusiveGateway id="exclusivegateway10" name="Exclusive Gateway"></exclusiveGateway>
+    <sequenceFlow id="flow76" sourceRef="reviseVehicleOutRule" targetRef="exclusivegateway10"></sequenceFlow>
+    <sequenceFlow id="flow77" name="内部行政车、临时车辆、" sourceRef="exclusivegateway10" targetRef="exclusivegateway5">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${vehicleType=="1" || vehicleType=="3"}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="flow78" name="外部工艺车" sourceRef="exclusivegateway10" targetRef="reviseOutVehicleTask">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${vehicleType=="4"}]]></conditionExpression>
+    </sequenceFlow>
+    <dataObject id="vehicleNo" name="vehicleNo" itemSubjectRef="xsd:string"></dataObject>
+    <dataObject id="planDetailId" name="planDetailId" itemSubjectRef="xsd:string"></dataObject>
+    <dataObject id="isOutCar" name="isOutCar" itemSubjectRef="xsd:string">
+      <extensionElements>
+        <activiti:value>2</activiti:value>
+      </extensionElements>
+    </dataObject>
+    <dataObject id="hasCarOutTask" name="hasCarOutTask" itemSubjectRef="xsd:string">
+      <extensionElements>
+        <activiti:value>2</activiti:value>
+      </extensionElements>
+    </dataObject>
+    <dataObject id="business_eureka_name" name="business_eureka_name" itemSubjectRef="xsd:string">
+      <extensionElements>
+        <activiti:value>microservice-zlst-lms-logistics</activiti:value>
+      </extensionElements>
+    </dataObject>
+    <dataObject id="vehicelType" name="vehicelType" itemSubjectRef="xsd:string"></dataObject>
+    <dataObject id="msg" name="msg" itemSubjectRef="xsd:string"></dataObject>
+    <dataObject id="vehicleStatus" name="vehicleStatus" itemSubjectRef="xsd:string"></dataObject>
+    <dataObject id="outDcId" name="outDcId" itemSubjectRef="xsd:string"></dataObject>
+    <dataObject id="isOutRule" name="isOutRule" itemSubjectRef="xsd:string">
+      <extensionElements>
+        <activiti:value>2</activiti:value>
+      </extensionElements>
+    </dataObject>
+    <dataObject id="isInCar" name="isInCar" itemSubjectRef="xsd:string">
+      <extensionElements>
+        <activiti:value>2</activiti:value>
+      </extensionElements>
+    </dataObject>
+    <dataObject id="vehicleInOutId" name="vehicleInOutId" itemSubjectRef="xsd:string"></dataObject>
+    <dataObject id="noticeType" name="noticeType" itemSubjectRef="xsd:string"></dataObject>
+    <dataObject id="actionType" name="actionType" itemSubjectRef="xsd:string">
+      <extensionElements>
+        <activiti:value>2</activiti:value>
+      </extensionElements>
+    </dataObject>
+  </process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_VehicleOutTask">
+    <bpmndi:BPMNPlane bpmnElement="VehicleOutTask" id="BPMNPlane_VehicleOutTask">
+      <bpmndi:BPMNShape bpmnElement="startevent1" id="BPMNShape_startevent1">
+        <omgdc:Bounds height="35.0" width="35.0" x="1.0" y="63.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="reviseInVehicleType" id="BPMNShape_reviseInVehicleType">
+        <omgdc:Bounds height="55.0" width="105.0" x="89.0" y="145.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="exclusivegateway1" id="BPMNShape_exclusivegateway1">
+        <omgdc:Bounds height="40.0" width="40.0" x="121.0" y="242.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="reviseOutVehicleTask" id="BPMNShape_reviseOutVehicleTask">
+        <omgdc:Bounds height="55.0" width="105.0" x="271.0" y="235.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="exclusivegateway2" id="BPMNShape_exclusivegateway2">
+        <omgdc:Bounds height="40.0" width="40.0" x="409.0" y="242.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="updateVehDetStatus3" id="BPMNShape_updateVehDetStatus3">
+        <omgdc:Bounds height="55.0" width="105.0" x="900.0" y="366.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="updateVehDetStatus4" id="BPMNShape_updateVehDetStatus4">
+        <omgdc:Bounds height="55.0" width="105.0" x="1040.0" y="366.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="noticeOut" id="BPMNShape_noticeOut">
+        <omgdc:Bounds height="55.0" width="105.0" x="1325.0" y="366.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="endevent2" id="BPMNShape_endevent2">
+        <omgdc:Bounds height="35.0" width="35.0" x="1610.0" y="376.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="updateVehDetStatus" id="BPMNShape_updateVehDetStatus">
+        <omgdc:Bounds height="55.0" width="112.0" x="542.0" y="235.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="reviseVehicleOutRule" id="BPMNShape_reviseVehicleOutRule">
+        <omgdc:Bounds height="61.0" width="105.0" x="89.0" y="332.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="exclusivegateway5" id="BPMNShape_exclusivegateway5">
+        <omgdc:Bounds height="40.0" width="40.0" x="231.0" y="459.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="updateVehDetStatus2" id="BPMNShape_updateVehDetStatus2">
+        <omgdc:Bounds height="59.0" width="120.0" x="724.0" y="500.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="exclusivegateway8" id="BPMNShape_exclusivegateway8">
+        <omgdc:Bounds height="40.0" width="40.0" x="780.0" y="373.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="exclusivegateway9" id="BPMNShape_exclusivegateway9">
+        <omgdc:Bounds height="40.0" width="40.0" x="1167.0" y="373.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="outFormalities" id="BPMNShape_outFormalities">
+        <omgdc:Bounds height="55.0" width="105.0" x="655.0" y="366.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="createVehDetail" id="BPMNShape_createVehDetail">
+        <omgdc:Bounds height="55.0" width="105.0" x="89.0" y="53.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="updateVehDetStatus5" id="BPMNShape_updateVehDetStatus5">
+        <omgdc:Bounds height="55.0" width="105.0" x="1040.0" y="300.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="noticeMsg1" id="BPMNShape_noticeMsg1">
+        <omgdc:Bounds height="55.0" width="105.0" x="1480.0" y="366.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="createProvisionalVehicle" id="BPMNShape_createProvisionalVehicle">
+        <omgdc:Bounds height="62.0" width="105.0" x="377.0" y="449.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="createProvisionalVehicle1" id="BPMNShape_createProvisionalVehicle1">
+        <omgdc:Bounds height="62.0" width="105.0" x="545.0" y="499.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="updateVehDetStatus1" id="BPMNShape_updateVehDetStatus1">
+        <omgdc:Bounds height="55.0" width="105.0" x="377.0" y="366.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="noticeMsg" id="BPMNShape_noticeMsg">
+        <omgdc:Bounds height="55.0" width="105.0" x="520.0" y="366.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="noticeGateOutOpen" id="BPMNShape_noticeGateOutOpen">
+        <omgdc:Bounds height="55.0" width="105.0" x="900.0" y="442.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="archivingVehicleOut" id="BPMNShape_archivingVehicleOut">
+        <omgdc:Bounds height="55.0" width="105.0" x="1040.0" y="442.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="exclusivegateway10" id="BPMNShape_exclusivegateway10">
+        <omgdc:Bounds height="40.0" width="40.0" x="231.0" y="342.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge bpmnElement="flow2" id="BPMNEdge_flow2">
+        <omgdi:waypoint x="141.0" y="200.0"></omgdi:waypoint>
+        <omgdi:waypoint x="141.0" y="242.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow3" id="BPMNEdge_flow3">
+        <omgdi:waypoint x="161.0" y="262.0"></omgdi:waypoint>
+        <omgdi:waypoint x="271.0" y="262.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="42.0" width="100.0" x="160.0" y="249.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow5" id="BPMNEdge_flow5">
+        <omgdi:waypoint x="376.0" y="262.0"></omgdi:waypoint>
+        <omgdi:waypoint x="409.0" y="262.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow23" id="BPMNEdge_flow23">
+        <omgdi:waypoint x="449.0" y="262.0"></omgdi:waypoint>
+        <omgdi:waypoint x="542.0" y="262.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="14.0" width="60.0" x="464.0" y="249.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow44" id="BPMNEdge_flow44">
+        <omgdi:waypoint x="141.0" y="282.0"></omgdi:waypoint>
+        <omgdi:waypoint x="141.0" y="332.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="42.0" width="100.0" x="38.0" y="285.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow47" id="BPMNEdge_flow47">
+        <omgdi:waypoint x="760.0" y="393.0"></omgdi:waypoint>
+        <omgdi:waypoint x="780.0" y="393.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow48" id="BPMNEdge_flow48">
+        <omgdi:waypoint x="820.0" y="393.0"></omgdi:waypoint>
+        <omgdi:waypoint x="900.0" y="393.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="14.0" width="100.0" x="825.0" y="380.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow51" id="BPMNEdge_flow51">
+        <omgdi:waypoint x="1145.0" y="393.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1167.0" y="393.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow52" id="BPMNEdge_flow52">
+        <omgdi:waypoint x="1207.0" y="393.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1325.0" y="393.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="56.0" width="100.0" x="1206.0" y="366.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow54" id="BPMNEdge_flow54">
+        <omgdi:waypoint x="36.0" y="80.0"></omgdi:waypoint>
+        <omgdi:waypoint x="89.0" y="80.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow55" id="BPMNEdge_flow55">
+        <omgdi:waypoint x="141.0" y="108.0"></omgdi:waypoint>
+        <omgdi:waypoint x="141.0" y="145.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow56" id="BPMNEdge_flow56">
+        <omgdi:waypoint x="800.0" y="373.0"></omgdi:waypoint>
+        <omgdi:waypoint x="800.0" y="327.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1040.0" y="327.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="14.0" width="100.0" x="820.0" y="333.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow57" id="BPMNEdge_flow57">
+        <omgdi:waypoint x="654.0" y="262.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1532.0" y="262.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1532.0" y="366.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow58" id="BPMNEdge_flow58">
+        <omgdi:waypoint x="1430.0" y="393.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1480.0" y="393.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow59" id="BPMNEdge_flow59">
+        <omgdi:waypoint x="1145.0" y="327.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1483.0" y="327.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1532.0" y="366.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow60" id="BPMNEdge_flow60">
+        <omgdi:waypoint x="1187.0" y="413.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1186.0" y="464.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1484.0" y="464.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1532.0" y="421.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="42.0" width="100.0" x="1221.0" y="448.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow61" id="BPMNEdge_flow61">
+        <omgdi:waypoint x="844.0" y="529.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1532.0" y="529.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1532.0" y="421.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow62" id="BPMNEdge_flow62">
+        <omgdi:waypoint x="1585.0" y="393.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1610.0" y="393.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow63" id="BPMNEdge_flow63">
+        <omgdi:waypoint x="271.0" y="479.0"></omgdi:waypoint>
+        <omgdi:waypoint x="377.0" y="480.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="14.0" width="84.0" x="270.0" y="466.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow65" id="BPMNEdge_flow65">
+        <omgdi:waypoint x="251.0" y="499.0"></omgdi:waypoint>
+        <omgdi:waypoint x="251.0" y="530.0"></omgdi:waypoint>
+        <omgdi:waypoint x="545.0" y="530.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="14.0" width="84.0" x="274.0" y="535.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow66" id="BPMNEdge_flow66">
+        <omgdi:waypoint x="650.0" y="530.0"></omgdi:waypoint>
+        <omgdi:waypoint x="724.0" y="529.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow67" id="BPMNEdge_flow67">
+        <omgdi:waypoint x="429.0" y="282.0"></omgdi:waypoint>
+        <omgdi:waypoint x="429.0" y="366.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="14.0" width="60.0" x="434.0" y="313.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow68" id="BPMNEdge_flow68">
+        <omgdi:waypoint x="429.0" y="449.0"></omgdi:waypoint>
+        <omgdi:waypoint x="429.0" y="421.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow71" id="BPMNEdge_flow71">
+        <omgdi:waypoint x="952.0" y="421.0"></omgdi:waypoint>
+        <omgdi:waypoint x="952.0" y="442.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow72" id="BPMNEdge_flow72">
+        <omgdi:waypoint x="1005.0" y="469.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1040.0" y="469.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow73" id="BPMNEdge_flow73">
+        <omgdi:waypoint x="1092.0" y="442.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1092.0" y="421.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow74" id="BPMNEdge_flow74">
+        <omgdi:waypoint x="482.0" y="393.0"></omgdi:waypoint>
+        <omgdi:waypoint x="520.0" y="393.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow75" id="BPMNEdge_flow75">
+        <omgdi:waypoint x="625.0" y="393.0"></omgdi:waypoint>
+        <omgdi:waypoint x="655.0" y="393.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow76" id="BPMNEdge_flow76">
+        <omgdi:waypoint x="194.0" y="362.0"></omgdi:waypoint>
+        <omgdi:waypoint x="231.0" y="362.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow77" id="BPMNEdge_flow77">
+        <omgdi:waypoint x="251.0" y="382.0"></omgdi:waypoint>
+        <omgdi:waypoint x="251.0" y="459.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="42.0" width="100.0" x="250.0" y="401.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow78" id="BPMNEdge_flow78">
+        <omgdi:waypoint x="271.0" y="362.0"></omgdi:waypoint>
+        <omgdi:waypoint x="323.0" y="361.0"></omgdi:waypoint>
+        <omgdi:waypoint x="323.0" y="290.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="14.0" width="60.0" x="262.0" y="343.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>

@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:activiti="http://activiti.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://www.activiti.org/test">
+  <process id="childrenOrderProcess" name="OMS子订单流程" isExecutable="true">
+    <startEvent id="startevent1" name="开始"></startEvent>
+    <userTask id="usertask1" name="确认优先级"></userTask>
+    <sequenceFlow id="flow1" sourceRef="startevent1" targetRef="usertask1"></sequenceFlow>
+    <userTask id="usertask2" name="任务下发"></userTask>
+    <sequenceFlow id="flow2" sourceRef="usertask1" targetRef="usertask2"></sequenceFlow>
+    <receiveTask id="toTransportTask" name="待运输"></receiveTask>
+    <receiveTask id="transportTask" name="运输中"></receiveTask>
+    <receiveTask id="signReceivetask" name="已签收"></receiveTask>
+    <sequenceFlow id="flow4" sourceRef="usertask2" targetRef="toTransportTask"></sequenceFlow>
+    <sequenceFlow id="flow5" sourceRef="toTransportTask" targetRef="transportTask"></sequenceFlow>
+    <sequenceFlow id="flow6" sourceRef="transportTask" targetRef="signReceivetask"></sequenceFlow>
+    <receiveTask id="compeletReceivetask" name="已完成"></receiveTask>
+    <endEvent id="endevent1" name="结束"></endEvent>
+    <sequenceFlow id="flow7" sourceRef="compeletReceivetask" targetRef="endevent1"></sequenceFlow>
+    <sequenceFlow id="flow8" sourceRef="signReceivetask" targetRef="compeletReceivetask"></sequenceFlow>
+    <dataObject id="logisticsOrderId" name="OMS订单ID" itemSubjectRef="xsd:string"></dataObject>
+    <dataObject id="logisticsOrderParentId" name="父订单ID" itemSubjectRef="xsd:string"></dataObject>
+    <dataObject id="business_eureka_name" name="business_eureka_name" itemSubjectRef="xsd:string">
+      <extensionElements>
+        <activiti:value>microservice-zlst-logistics-oms</activiti:value>
+      </extensionElements>
+    </dataObject>
+  </process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_childrenOrderProcess">
+    <bpmndi:BPMNPlane bpmnElement="childrenOrderProcess" id="BPMNPlane_childrenOrderProcess">
+      <bpmndi:BPMNShape bpmnElement="startevent1" id="BPMNShape_startevent1">
+        <omgdc:Bounds height="35.0" width="35.0" x="180.0" y="180.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="usertask1" id="BPMNShape_usertask1">
+        <omgdc:Bounds height="55.0" width="105.0" x="280.0" y="170.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="usertask2" id="BPMNShape_usertask2">
+        <omgdc:Bounds height="55.0" width="105.0" x="440.0" y="170.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="toTransportTask" id="BPMNShape_toTransportTask">
+        <omgdc:Bounds height="55.0" width="105.0" x="610.0" y="170.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="transportTask" id="BPMNShape_transportTask">
+        <omgdc:Bounds height="55.0" width="105.0" x="770.0" y="170.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="signReceivetask" id="BPMNShape_signReceivetask">
+        <omgdc:Bounds height="55.0" width="105.0" x="930.0" y="170.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="compeletReceivetask" id="BPMNShape_compeletReceivetask">
+        <omgdc:Bounds height="55.0" width="105.0" x="1100.0" y="170.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="endevent1" id="BPMNShape_endevent1">
+        <omgdc:Bounds height="35.0" width="35.0" x="1250.0" y="180.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge bpmnElement="flow1" id="BPMNEdge_flow1">
+        <omgdi:waypoint x="215.0" y="197.0"></omgdi:waypoint>
+        <omgdi:waypoint x="280.0" y="197.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow2" id="BPMNEdge_flow2">
+        <omgdi:waypoint x="385.0" y="197.0"></omgdi:waypoint>
+        <omgdi:waypoint x="440.0" y="197.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow4" id="BPMNEdge_flow4">
+        <omgdi:waypoint x="545.0" y="197.0"></omgdi:waypoint>
+        <omgdi:waypoint x="610.0" y="197.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow5" id="BPMNEdge_flow5">
+        <omgdi:waypoint x="715.0" y="197.0"></omgdi:waypoint>
+        <omgdi:waypoint x="770.0" y="197.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow6" id="BPMNEdge_flow6">
+        <omgdi:waypoint x="875.0" y="197.0"></omgdi:waypoint>
+        <omgdi:waypoint x="930.0" y="197.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow7" id="BPMNEdge_flow7">
+        <omgdi:waypoint x="1205.0" y="197.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1250.0" y="197.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow8" id="BPMNEdge_flow8">
+        <omgdi:waypoint x="1035.0" y="197.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1100.0" y="197.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>

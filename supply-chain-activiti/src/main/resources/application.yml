@@ -1,0 +1,37 @@
+#port
+server:
+  port: 8083
+
+spring:
+  application:
+    name: microservice-supply-chain-activiti
+
+#  sleuth:
+#    sampler:
+#      percentage: 1
+#  zipkin:
+#    base-url: http://zipkin-server.kube-system
+  messages:
+     basename: i18n/exception_info,i18n/base_exception_info
+     
+management:
+  security:
+    enabled: false
+logging:
+  config:
+    classpath: logback-spring.xml
+hystrix:
+  command:
+    default:
+      execution:
+        isolation:
+          thread:
+            timeoutInMilliseconds: 6000
+
+activiti:
+  deployPath: classpath*:/processes/logistics/*
+  
+#ELK日志
+#zlst:
+#  elklog:
+#    pointcutCtrl: execution(public * com.zlst..*.*(..))
